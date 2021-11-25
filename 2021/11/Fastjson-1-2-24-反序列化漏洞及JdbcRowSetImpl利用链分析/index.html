@@ -5,11 +5,11 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title> - FeatherStark/14m3ta7k</title>
+    <title>Fastjson(1.2.24)反序列化漏洞及JdbcRowSetImpl利用链分析 - FeatherStark/14m3ta7k</title>
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="google" content="notranslate" />
-    <meta name="keywords" content="TriDiamond Obsidian,"> 
+    <meta name="keywords" content="14m3ta7k,FeatherStark,"> 
     <meta name="description" content="This is my hexo blog,Fastjson 1.2.24 反序列化漏洞及JdbcRowSetImpl利用链分析
 Fastjson 是一个 Java 库,可以将 Java 对象转换为 JSON 格式,当然它也可以将 JSON ,"> 
     <meta name="author" content="14m3ta7k"> 
@@ -62,7 +62,7 @@ Fastjson 是一个 Java 库,可以将 Java 对象转换为 JSON 格式,当然它
     <div class="navigation animated fadeIn fast delay-1s">
         <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://featherstark.github.io">
         <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
-        <h3 class="subtitle"></h3>
+        <h3 class="subtitle">Fastjson(1.2.24)反序列化漏洞及JdbcRowSetImpl利用链分析</h3>
         <div class="social">
             <!--        <div class="like-icon">-->
             <!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
@@ -96,7 +96,7 @@ Fastjson 是一个 Java 库,可以将 Java 对象转换为 JSON 格式,当然它
                 
                 十一月 25, 2021
             </p>
-            <h3 class="post-title animated fadeInDown"><a href="/2021/11/fastjson%20%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%20%EF%BC%88CNVD-2017-02833%EF%BC%89/" title="Untitled" class="">Untitled</a>
+            <h3 class="post-title animated fadeInDown"><a href="/2021/11/Fastjson-1-2-24-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%8F%8AJdbcRowSetImpl%E5%88%A9%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90/" title="Fastjson(1.2.24)反序列化漏洞及JdbcRowSetImpl利用链分析" class="">Fastjson(1.2.24)反序列化漏洞及JdbcRowSetImpl利用链分析</a>
             </h3>
             
             <p class="post-count animated fadeInDown">
@@ -333,11 +333,20 @@ setAutoCommit()
                 <div class="subbox">
                     <img src="https://avatars.githubusercontent.com/u/42148584?v=4" height=300 width=300></img>
                     <p>14m3ta7k</p>
-                    <span>Think like an artist, develop like an artisan</span>
+                    <span>Better to light one candle than to curse the darkness</span>
                     <dl>
                         
                             
+                                <dd><a href="https://github.com/FeatherStark" target="_blank"><span
+                                    class=" iconfont icon-github"></span></a></dd>
                             
+                            
+                                <dd><a href="https://twitter.com/14m3ta7k" target="_blank"><span
+                                    class=" iconfont icon-twitter"></span></a></dd>
+                            
+                            
+                                <dd><a href="mailto:featherstark@outlook.com" target="_blank"><span
+                                    class=" iconfont icon-stack-overflow"></span></a></dd>
                             
                         
                         
@@ -556,7 +565,7 @@ setAutoCommit()
     var typedTextEl = $('.typed-text');
     if (typedTextEl && typedTextEl.length > 0) {
       var typed = new Typed('.typed-text', {
-        strings: ['Think like an artist, develop like an artisan', '艺术家思维去思考问题，工匠创造精神去开发'],
+        strings: ['Better to light one candle than to curse the darkness', '与其诅咒黑暗，不如燃起蜡烛'],
         typeSpeed: 90,
         loop: true,
         loopCount: Infinity,
